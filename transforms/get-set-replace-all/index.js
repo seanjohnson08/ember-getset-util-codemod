@@ -2,19 +2,21 @@ const { getParser } = require('codemod-cli').jscodeshift;
 const { ensureImport } = require('../../utils/imports');
 
 function invertCallExpression(j, root, name) {
-  root
-    .find(j.CallExpression, {
-      callee: {
-        property: {
-          name,
-        },
+  const calls = root.find(j.CallExpression, {
+    callee: {
+      property: {
+        name,
       },
-    })
-    .forEach(path => {
+    },
+  });
+
+  if (calls.size() > 0) {
+    ensureImport(j, root, name, '@ember/object');
+    calls.forEach(path => {
       const { object } = path.node.callee;
-      ensureImport(j, root, name, '@ember/object');
       path.replace(j.callExpression(j.identifier(name), [object, ...path.node.arguments]));
     });
+  }
 }
 
 module.exports = function transformer(file, api) {
