@@ -21,6 +21,8 @@ ember-getset-util-codemod <TRANSFORM NAME> path/of/files/ or/some**/*glob.js
 ## Transforms
 
 <!--TRANSFORMS_START-->
+* [get-set-replace-all](transforms/get-set-replace-all/README.md)
+* [getset-util](transforms/getset-util/README.md)
 <!--TRANSFORMS_END-->
 
 ## Contributing
