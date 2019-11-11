@@ -10,21 +10,24 @@
  * @param  {String} module      The name of the module the imports should come from.
  * @return {Void}
  */
-module.exports = function ensureImport(ast, j, importNames, module) {
+module.exports = function ensureImport(ast, j, importNames = [], module) {
+  // No imports to add. Do nothing.
+  if (!importNames.length) return;
+
   let emberObjectImport = ast.find(j.ImportDeclaration, { source: { value: module } });
 
-    // Did not find ember object imported, so add it
-    if (!emberObjectImport.length) {
-      emberObjectImport = j.importDeclaration(
-        importNames.map(method => j.importSpecifier(j.identifier(method))),
-        j.literal(module)
-      );
-      j(ast.find(j.ImportDeclaration).get()).insertBefore(emberObjectImport);
-    } else {
-      importNames.forEach(method => {
-        if (!emberObjectImport.find(j.ImportSpecifier, { local: { name: method } }).length) {
-          emberObjectImport.get(0).node.specifiers.push(j.importSpecifier(j.identifier(method)));
-        }
-      });
-    }
+  // Did not find ember object imported, so add it
+  if (!emberObjectImport.length) {
+    emberObjectImport = j.importDeclaration(
+      importNames.map(method => j.importSpecifier(j.identifier(method))),
+      j.literal(module)
+    );
+    j(ast.find(j.ImportDeclaration).get()).insertBefore(emberObjectImport);
+  } else {
+    importNames.forEach(method => {
+      if (!emberObjectImport.find(j.ImportSpecifier, { local: { name: method } }).length) {
+        emberObjectImport.get(0).node.specifiers.push(j.importSpecifier(j.identifier(method)));
+      }
+    });
+  }
 }
